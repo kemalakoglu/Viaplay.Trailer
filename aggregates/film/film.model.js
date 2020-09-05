@@ -1,6 +1,6 @@
 //film.model.js
 const mongoose = require("mongoose");
-const Category = require("./category.model").schema;
+const Category = require("../category/category.model").schema;
 const filmSchema = new mongoose.Schema({
     id: {
         type: Number
