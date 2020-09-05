@@ -4,7 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const connectDb = require("./extensions/connection");
-const trailerTypeRouter = require('./routes/trailer');
+const trailerRouter = require('./routes/trailer');
 const _ = require('lodash');
 const app = express();
 const port = 8083
@@ -16,7 +16,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', trailerTypeRouter);
+
+app.use('/', trailerRouter);
+app.use('/trailer', trailerRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

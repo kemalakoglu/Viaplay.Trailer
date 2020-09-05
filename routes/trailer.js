@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const categoryModel= require('../models/category.model');
 
 router.get('/', function (req, res, next) {
     res.send('respond with a resource');
