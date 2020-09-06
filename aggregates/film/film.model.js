@@ -1,14 +1,13 @@
 //film.model.js
 const mongoose = require("mongoose");
-const Category = require("../category/category.model").schema;
 const filmSchema = new mongoose.Schema({
-    id: {
-        type: Number
-    },
-    name: {
+
+    title: {
         type: String
     },
-    category:[Category],
+    categoryId:{
+        type: String
+    },
     createDate: {
         type: Date
     },

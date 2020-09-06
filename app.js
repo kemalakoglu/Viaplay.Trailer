@@ -9,6 +9,7 @@ const _ = require('lodash');
 const app = express();
 const port = 8083
 const bodyParser = require('body-parser');
+const ingtegrationModule = require('./aggregates/integration/integration.module');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -39,6 +40,8 @@ app.use(function(err, req, res, next) {
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
+ingtegrationModule.CheckViaPlayContentChanges();
+
 connectDb().then(() => {
   console.log("MongoDb connected");
 });
@@ -46,7 +49,5 @@ connectDb().then(() => {
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
-
-
 
 module.exports = app;
