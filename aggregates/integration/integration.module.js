@@ -26,8 +26,6 @@ async function CheckViaPlayContentChanges() {
                 if (filmList!=null) {
                     filmList.forEach(filmElem => {
                         filmModules.CheckFilmIsExist(filmElem['publicPath'], categoryElem["id"],filmElem['content']);
-
-                        // filmModules.GetFilmTrailerUrlByNameAndCategory(filmElem['content'], categoryElem["id"], filmElem['publicPath']);
                     });
                 }
 
@@ -43,16 +41,4 @@ async function CheckViaPlayContentChanges() {
     return true;
 }
 
-async function CheckUrlIsValid(url) {
-    if (url == "1")
-        return false;
-    return true;
-}
-
-async function GetFilmTrailerByTMDbAPI(filmName, token) {
-    return "";
-}
-
 module.exports.CheckViaPlayContentChanges = CheckViaPlayContentChanges;
-module.exports.CheckUrlIsValid = CheckUrlIsValid;
-module.exports.GetFilmTrailerByTMDbAPI = GetFilmTrailerByTMDbAPI;

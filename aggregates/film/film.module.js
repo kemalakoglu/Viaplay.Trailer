@@ -27,47 +27,6 @@ async function GetFilmTrailerUrlByName(filmName) {
         return 'Film Content Does Not Have Trailer. public path is:' + filmName;
 }
 
-async function GetFilmTrailerUrlByNameAndCategory(content, catId, filmTitle) {
-    if (filmTitle != null || filmTitle != "") {
-        let filmEntity = await filmModel.findOne({ title: filmTitle, categoryId: catId }).exec();
-
-        if (filmEntity != null) {
-            if (filmEntity.trailerUrl == null) {
-
-                const client = rest.wrap(mime)
-                    .wrap(errorCode, { code: 500 });
-
-                let imdbId = _.get(content, 'imdb[id]');
-                if (imdbId != null) {
-                    client({ path: 'http://api.themoviedb.org/3/movie/' + imdbId + '/videos?api_key=d316364b6940ee327b33496b39a8f7e7' }).then(
-                        function (response) {
-                            console.log('response: ', response);
-                            if (_.get(response, "entity[results]").length > 0) {
-                                let trailerKey = "https://www.youtube.com/watch?v=" + _.compact(_.map(response, "[results]"))[0][0]['key'];
-                                filmModel.findByIdAndUpdate({ _id: filmEntity._id }, { trailerUrl: trailerKey }).exec();
-                            }
-                            else {
-                                console.error('Film Content Does Not Have Trailer. public path is:' + filmTitle);
-                            }
-                        },
-
-                        function (ex) {
-                            console.error('response error: ', ex);
-                        }
-                    ).catch(function (error) {
-                        console.error('response error: ', error);
-                    });
-                }
-                else {
-                    console.error('Film Content Does Not Have Imdb Id. public path is:' + filmTitle);
-                }
-
-
-            }
-        }
-    }
-}
-
 async function CheckFilmIsExist(filmTitle, catId, content) {
 
     let client = rest.wrap(mime)
@@ -133,6 +92,5 @@ async function CheckFilmIsExist(filmTitle, catId, content) {
 }
 
 module.exports.AddFilm = AddFilm;
-module.exports.GetFilmTrailerUrlByNameAndCategory = GetFilmTrailerUrlByNameAndCategory;
 module.exports.CheckFilmIsExist = CheckFilmIsExist;
 module.exports.GetFilmTrailerUrlByName = GetFilmTrailerUrlByName;
