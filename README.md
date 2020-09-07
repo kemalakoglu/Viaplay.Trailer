@@ -64,14 +64,14 @@ Second thing is MongoDB port. Please check it in extensions/connection.js
 
 Then, run these commands to dockerize this application;
 
---- docker build -t viaplaycontainer .
---- docker-compose up
+- #### docker build -t viaplaycontainer .
+- ####  docker-compose up
 
 ## Simple request to API
 
-API Url: http://localhost:8080/trailer/
-Request Type: GET
-Example Body: 
+- #### API Url: http://localhost:8080/trailer/
+- #### Request Type: GET
+- #### Example Body: 
 {
     "link":"https://content.viaplay.se/pc-se/film/the-dead-dont-die-2019"
 }
