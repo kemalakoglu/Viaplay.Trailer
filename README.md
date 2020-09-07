@@ -57,21 +57,21 @@ https://www.docker.com/products/docker-desktop
 
 First thing is checking 8080 port on your computer. If it is not available please define the port information which is available, onto some documents under the project. This is described below here;  
 
-"const port = 8080;" on app.js
-"EXPOSE 8080" on DockerFile  
+- #### "const port = 8080;" on app.js
+- #### "EXPOSE 8080" on DockerFile  
 
 Second thing is MongoDB port. Please check it in extensions/connection.js
 
 Then, run these commands to dockerize this application;
 
---- docker build -t viaplaycontainer .
---- docker-compose up
+- #### docker build -t viaplaycontainer .
+- ####  docker-compose up
 
 ## Simple request to API
 
-API Url: http://localhost:8080/trailer/
-Request Type: GET
-Example Body: 
+- #### API Url: http://localhost:8080/trailer/
+- #### Request Type: GET
+- #### Example Body: 
 {
     "link":"https://content.viaplay.se/pc-se/film/the-dead-dont-die-2019"
 }
