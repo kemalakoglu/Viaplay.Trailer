@@ -57,8 +57,8 @@ https://www.docker.com/products/docker-desktop
 
 First thing is checking 8080 port on your computer. If it is not available please define the port information which is available, onto some documents under the project. This is described below here;  
 
-"const port = 8080;" on app.js
-"EXPOSE 8080" on DockerFile  
+- #### "const port = 8080;" on app.js
+- #### "EXPOSE 8080" on DockerFile  
 
 Second thing is MongoDB port. Please check it in extensions/connection.js
 
