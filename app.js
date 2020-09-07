@@ -7,7 +7,7 @@ const connectDb = require("./extensions/connection");
 const trailerRouter = require('./routes/trailer');
 const _ = require('lodash');
 const app = express();
-const port = 8083
+const port = 8080;
 const bodyParser = require('body-parser');
 const ingtegrationModule = require('./aggregates/integration/integration.module');
 
