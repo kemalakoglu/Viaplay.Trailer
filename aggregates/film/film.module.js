@@ -5,30 +5,31 @@ const mime = require('rest/interceptor/mime');
 const errorCode = require('rest/interceptor/errorCode');
 const _ = require('lodash');
 
-async function AddFilm(content, catId) {
+async function AddFilm(filmTitle, catId, trailerUrl) {
 
     let filmData = new filmModel({
-        title: content["title"],
+        title: filmTitle,
         categoryId: catId,
         createDate: Date.now(),
-        trailerUrl: null
+        trailerUrl: trailerUrl
     });
 
     filmData.save().then(() => {
-        console.log("Film is Created. Details; title: " + film.title);
+        console.log("Film is Created. Details; title: " + filmTitle);
     });
 }
 
 async function GetFilmTrailerUrlByName(filmName) {
-    let filmTitle = filmName.split(' - ')[0];
-
     let filmEntity = await filmModel.findOne({ title: filmName }).exec();
-    return filmEntity.trailerUrl;
+    if (filmEntity.trailerUrl != null || filmEntity.trailerUrl != "")
+        return filmEntity.trailerUrl;
+    else
+        return 'Film Content Does Not Have Trailer. public path is:' + filmName;
 }
 
-async function GetFilmTrailerUrlByNameAndCategory(content, catId) {
-    if (content["title"] != null || content["title"] != "") {
-        let filmEntity = await filmModel.findOne({ title: content["title"], categoryId: catId }).exec();
+async function GetFilmTrailerUrlByNameAndCategory(content, catId, filmTitle) {
+    if (filmTitle != null || filmTitle != "") {
+        let filmEntity = await filmModel.findOne({ title: filmTitle, categoryId: catId }).exec();
 
         if (filmEntity != null) {
             if (filmEntity.trailerUrl == null) {
@@ -36,40 +37,102 @@ async function GetFilmTrailerUrlByNameAndCategory(content, catId) {
                 const client = rest.wrap(mime)
                     .wrap(errorCode, { code: 500 });
 
-                client({ path: 'http://api.themoviedb.org/3/movie/' + content['imdb']['id'] + '/videos?api_key=d316364b6940ee327b33496b39a8f7e7' }).then(
-                    function (response) {
-                        console.log('response: ', response);
-                        let trailerKey = "https://www.youtube.com/watch?v=" + _.compact(_.map(response, "[results]"))[0][0]['key'];
+                let imdbId = _.get(content, 'imdb[id]');
+                if (imdbId != null) {
+                    client({ path: 'http://api.themoviedb.org/3/movie/' + imdbId + '/videos?api_key=d316364b6940ee327b33496b39a8f7e7' }).then(
+                        function (response) {
+                            console.log('response: ', response);
+                            if (_.get(response, "entity[results]").length > 0) {
+                                let trailerKey = "https://www.youtube.com/watch?v=" + _.compact(_.map(response, "[results]"))[0][0]['key'];
+                                filmModel.findByIdAndUpdate({ _id: filmEntity._id }, { trailerUrl: trailerKey }).exec();
+                            }
+                            else {
+                                console.error('Film Content Does Not Have Trailer. public path is:' + filmTitle);
+                            }
+                        },
 
-                        filmModel.findByIdAndUpdate({ _id: filmEntity._id }, { trailerUrl: trailerKey }).exec();
-                    },
+                        function (ex) {
+                            console.error('response error: ', ex);
+                        }
+                    ).catch(function (error) {
+                        console.error('response error: ', error);
+                    });
+                }
+                else {
+                    console.error('Film Content Does Not Have Imdb Id. public path is:' + filmTitle);
+                }
 
-                    function (response) {
-                        console.error('response error: ', response);
-                    }
-                );
 
             }
         }
     }
 }
 
-async function UpdateFilm(filmId, trailerUrl) {
-    return true;
-}
+async function CheckFilmIsExist(filmTitle, catId, content) {
 
-async function CheckFilmIsExist(content, catId) {
-    if (content["title"] != null || content["title"] != "") {
-        let response = await filmModel.findOne({ title: content["title"], categoryId: catId }).exec();
+    let client = rest.wrap(mime)
+        .wrap(errorCode, { code: 500 });
 
-        if (response == null) {
-            AddFilm(content, catId);
+    if (filmTitle != null || filmTitle != "") {
+        let filmEntity = await filmModel.findOne({ title: filmTitle, categoryId: catId }).exec();
+        let imdbId = _.get(content, 'imdb[id]');
+
+        if (filmEntity == null) {
+            if (imdbId != null) {
+                client({ path: 'http://api.themoviedb.org/3/movie/' + imdbId + '/videos?api_key=d316364b6940ee327b33496b39a8f7e7' }).then(
+                    function (response) {
+                        console.log('response: ', response);
+                        if (_.get(response, "entity[results]").length > 0) {
+                            let trailerUrl = "https://www.youtube.com/watch?v=" + _.compact(_.map(response, "[results]"))[0][0]['key'];
+                            AddFilm(filmTitle, catId, trailerUrl);
+                        }
+                        else {
+                            console.error('Film Content Does Not Have Trailer. public path is:' + filmTitle);
+                        }
+                    },
+
+                    function (ex) {
+                        console.error('response error: ', ex);
+                    }
+                ).catch(function (error) {
+                    console.error('response error: ', error);
+                });
+            }
+            else {
+                console.error('Film Content Does Not Have Imdb Id. public path is:' + filmTitle);
+            }
+
+        }
+        else {
+            //Update Trailer Url
+            if (imdbId != null) {
+                client({ path: 'http://api.themoviedb.org/3/movie/' + imdbId + '/videos?api_key=d316364b6940ee327b33496b39a8f7e7' }).then(
+                    function (response) {
+                        console.log('response: ', response);
+                        if (_.get(response, "entity[results]").length > 0) {
+                            let trailerUrl = "https://www.youtube.com/watch?v=" + _.compact(_.map(response, "[results]"))[0][0]['key'];
+                            filmModel.findByIdAndUpdate({ _id: filmEntity._id }, { trailerUrl: trailerUrl }).exec();
+                        }
+                        else {
+                            console.error('Film Content Does Not Have Trailer. public path is:' + filmTitle);
+                        }
+                    },
+
+                    function (ex) {
+                        console.error('response error: ', ex);
+                    }
+                ).catch(function (error) {
+                    console.error('response error: ', error);
+                });
+            }
+            else {
+                console.error('Film Content Does Not Have Imdb Id. public path is:' + filmTitle);
+            }
         }
     }
 }
 
 module.exports.AddFilm = AddFilm;
 module.exports.GetFilmTrailerUrlByNameAndCategory = GetFilmTrailerUrlByNameAndCategory;
-module.exports.UpdateFilm = UpdateFilm;
 module.exports.CheckFilmIsExist = CheckFilmIsExist;
 module.exports.GetFilmTrailerUrlByName = GetFilmTrailerUrlByName;

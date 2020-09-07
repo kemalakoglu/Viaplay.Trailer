@@ -25,9 +25,9 @@ async function CheckViaPlayContentChanges() {
                 let filmList = _.compact(_.map(categoryElem, "['viaplay:products']"))[0];
                 if (filmList!=null) {
                     filmList.forEach(filmElem => {
-                        filmModules.CheckFilmIsExist(filmElem['content'], categoryElem["id"]);
+                        filmModules.CheckFilmIsExist(filmElem['publicPath'], categoryElem["id"],filmElem['content']);
 
-                        filmModules.GetFilmTrailerUrlByNameAndCategory(filmElem['content'], categoryElem["id"]);
+                        // filmModules.GetFilmTrailerUrlByNameAndCategory(filmElem['content'], categoryElem["id"], filmElem['publicPath']);
                     });
                 }
 
